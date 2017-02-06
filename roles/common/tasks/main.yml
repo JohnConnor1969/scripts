@@ -1,0 +1,44 @@
+---
+# roles/common/tasks/main.yml
+
+# - name: create local.repo
+#   template: src=etc/yum.repos.d/local.repo dest=/home/john/yum.repos.d/
+
+    # Обновление кеша и установка необходимых пакетов, всего программного обеспечения,
+    # необходимого для работы нашего сервера
+
+
+- name: 'apt | update'
+  become: true
+  action: 'apt update_cache=yes'
+
+- name: 'apt | upgrade'
+  become: yes
+  action: 'apt upgrade=dist'
+
+- name: 'apt | install dependencies'
+  become: yes
+  action: 'apt pkg={{ item }}'
+  # with_items - это обычный цикл в Ansible, он возьмёт и прогонит все его элементы через action
+  with_items:
+    - 'python-pip'
+    - 'python-pexpect'
+    - 'expect'
+    - 'yum'
+    - 'git'
+    - 'php5'
+    - 'php5-dev'
+    - 'php-pear'
+    - 'php-http'
+    - 'libapache2-mod-php5'
+    - 'curl'
+    - 'php5-curl'
+    - 'php5-mysql'
+    - 'make'
+    - 'libpcre3-dev'
+    - 'mc'
+    - 'vifm'
+    - 'lftp'
+    - 'vim'
+    - 'mediainfo'
+

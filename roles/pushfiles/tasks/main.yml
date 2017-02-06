@@ -1,0 +1,9 @@
+---
+# roles/pullfiles/tasks/main.yml
+
+- name: copy files
+  copy: src={{ item }} dest=/home/zoomtv/zoomtv-samsung/api/web/images/message/{{ item }} mode=u+x owner=zoomtv
+  with_items:
+#    - 2016-07-14-8-new-channels.jpg
+    - 2016-08-3-msg_tizen_fuck_up.jpg
+

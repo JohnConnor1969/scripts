@@ -1,0 +1,37 @@
+---
+# roles/getbackups/tasks/main.yml
+
+## Store file into /tmp/fetched/host.example.com/tmp/somefile
+#- fetch: src=/tmp/somefile dest=/tmp/fetched
+
+## Specifying a path directly
+#- fetch: src=/home/{{ ansible_user }}/backup dest=/tmp/prefix-{{ inventory_hostname }} flat=yes
+
+## Specifying a destination path
+#- fetch: src=/tmp/uniquefile dest=/tmp/special/ flat=yes
+#
+## Storing in a path relative to the playbook
+#- fetch: src=/tmp/uniquefile dest=special/prefix-{{ inventory_hostname }} flat=yes
+
+#- name: 'apt | update'
+#  action: 'apt update_cache=yes'
+
+- name: Fetch stuff from the remote and save to local
+#  fetch:  src={{ item }} dest=~/tmp/ flat=yes
+  synchronize:  src={{ item }} dest=~/tmp/ mode=pull recursive=yes archive=false dirs=true set_remote_user=true
+  with_items:
+#    - "/home/zoomtv/backup/mysql/2016-07-06/zoomtv.2016-07-06-05:00:01.gz"
+    - "/home/zoomtv/backup/"
+    - "/home/zoomtv/zoomtv-samsung/api/web/images/message/"
+    - "/home/zoomtv/zoomtv-samsung/api/src/ZoomTV/APIBundle/Command/"
+    - "/home/zoomtv/zoomtv-samsung/api/web/logos/"
+#    - "/etc/mysql/"
+#    - "/home/zoomtv/.vim/"
+#    - "/root/.vim/"
+#    - "/home/zoomtv/.vimrc"
+#    - "/root/.vimrc"
+#    - "/home/zoomtv/backup/mysql/2016-07-06/"
+#    - "/home/zoomtv/zoomtv-samsung/index"
+#    - "/home/zoomtv/zoomtv-samsung/index.html"
+#    - "/home/zoomtv/.viminfo"
+#    - "/installimage.conf"

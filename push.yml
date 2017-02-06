@@ -1,0 +1,9 @@
+---
+- hosts: 'prod'
+  remote_user: 'zoomtv'
+  become: no
+
+
+  # Список задач, которые будут выполнены последовательно
+  roles:
+   - pushfiles

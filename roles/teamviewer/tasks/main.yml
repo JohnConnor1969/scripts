@@ -1,0 +1,16 @@
+---
+# roles/teamviewer/tasks/main.yml
+
+- name: copy installer
+  copy: src={{ item }} dest=/home/ mode=u+x
+  with_items:
+    # - teamviewersetup не работает потому что инсталлятор содержит ряд трюков препятствующих этому
+    - teamviewerlicense
+    - teamviewer_11.0.52520_i386.deb
+
+- name: teamviewer license
+  command: ./teamviewerlicense
+      chdir=/home/
+      creates=/opt/teamviewer/ctlscriptl.sh
+  register: license_teamviewer_result
+

@@ -1,0 +1,85 @@
+---
+# roles/mysql/tasks/main.yml
+
+# - name: create local.repo
+#   template: src=etc/yum.repos.d/local.repo dest=/home/john/yum.repos.d/
+
+    # Обновление кеша и установка необходимых пакетов, всего программного обеспечения,
+    # необходимого для работы нашего сервера
+
+
+- name: 'apt | update'
+  action: 'apt update_cache=yes'
+
+- name: 'apt | upgrade'
+  action: 'apt upgrade=dist'
+
+- name: 'apt | install dependencies'
+  action: 'apt pkg={{ item }}'
+  # with_items - это обычный цикл в Ansible, он возьмёт и прогонит все его элементы через action
+  with_items:
+    - 'mysql-server'
+    - 'mysql-client'
+    - 'python-mysqldb'
+
+- name: 'fix root password'
+  mysql_user:  name={{ mysql_root_username }} password={{ mysql_root_password }} update_password=always
+  ignore_errors: True
+
+
+
+- name: 'create database zoomtv'
+  mysql_db: login_user={{ mysql_root_username }} login_password={{ mysql_root_password }} name=zoomtv state=present
+
+- name: 'add user statistics'
+  mysql_user: login_user={{ mysql_root_username }} host={{ item }} login_password={{ mysql_root_password }} name=statistics password=vadfjioq3lkevqr76gvq priv=zoomtv.*:SELECT state=present
+  with_items:
+    - '127.0.0.1'
+    - '%'
+
+- name: 'add user zoomtv'
+  mysql_user: login_user={{ mysql_root_username }} host={{ item }} login_password={{ mysql_root_password }} name=zoomtv password=654321 priv=zoomtv.*:ALL state=present
+  with_items:
+    - '127.0.0.1'
+    - '%'
+
+
+## Removes anonymous user account for localhost
+#- mysql_user: name='' host=localhost state=absent
+#
+## Removes all anonymous user accounts
+#- mysql_user: name='' host_all=yes state=absent
+#
+## Create database user with name 'bob' and password '12345' with all database privileges
+#- mysql_user: name=bob password=12345 priv=*.*:ALL state=present
+#
+## Create database user with name 'bob' and previously hashed mysql native password '*EE0D72C1085C46C5278932678FBE2C6A782821B4' with all database privileges
+#- mysql_user: name=bob password='*EE0D72C1085C46C5278932678FBE2C6A782821B4' encrypted=yes priv=*.*:ALL state=present
+#
+## Creates database user 'bob' and password '12345' with all database privileges and 'WITH GRANT OPTION'
+#- mysql_user: name=bob password=12345 priv=*.*:ALL,GRANT state=present
+#
+## Modify user Bob to require SSL connections. Note that REQUIRESSL is a special privilege that should only apply to *.* by itself.
+#- mysql_user: name=bob append_privs=true priv=*.*:REQUIRESSL state=present
+#
+## Ensure no user named 'sally'@'localhost' exists, also passing in the auth credentials.
+#- mysql_user: login_user=root login_password=123456 name=sally state=absent
+#
+## Ensure no user named 'sally' exists at all
+#- mysql_user: name=sally host_all=yes state=absent
+#
+## Specify grants composed of more than one word
+#- mysql_user: name=replication password=12345 priv="*.*:REPLICATION CLIENT" state=present
+#
+## Revoke all privileges for user 'bob' and password '12345'
+#- mysql_user: name=bob password=12345 priv=*.*:USAGE state=present
+#
+## Example privileges string format
+#mydb.*:INSERT,UPDATE/anotherdb.*:SELECT/yetanotherdb.*:ALL
+#
+## Example using login_unix_socket to connect to server
+#- mysql_user: name=root password=abc123 login_unix_socket=/var/run/mysqld/mysqld.sock
+#
+## Example of skipping binary logging while adding user 'bob'
+#- mysql_user: name=bob password=12345 priv=*.*:USAGE state=present sql_log_bin=no
+

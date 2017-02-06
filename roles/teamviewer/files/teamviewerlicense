@@ -1,0 +1,16 @@
+#!/usr/bin/expect --
+
+set timeout -1
+
+spawn sudo teamviewer license accept
+while {1} {
+  expect {
+    ".*лицензионное соглашен?.*" {
+      send "y\n"
+    }
+    eof {
+      break
+    }
+  }
+}
+#этот код работает, он соглашается с лицензионным соглашением

@@ -1,0 +1,4 @@
+
+[prad]
+111.222.3.44 ansible_connection='paramiko' ansible_user='root' ansible_pass='xxxxxxxxxxxxxxx' ansible_sudo_pass='xxxxxxxxxxxxxxx'
+

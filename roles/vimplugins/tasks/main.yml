@@ -1,0 +1,130 @@
+---
+# roles/vimplugins/tasks/main.yml
+
+
+- name: copy vimrc
+  become: yes
+  copy: src={{ item }} dest=~/.vimrc mode=u+x
+  with_items:
+    - vimrc2
+
+- name: install Vundle
+  become: yes
+  git:
+    repo: 'https://github.com/VundleVim/Vundle.vim.git'
+    dest: ~/.vim/bundle/Vundle.vim
+    # version: v0.10.2
+
+- name: create spell directory
+  become: yes
+  file: path=~/.vim/spell state=directory
+
+- name: update plugins
+  become: yes
+  shell: vim -i NONE -c PluginUpdate -c quitall
+
+- name: change vimrc
+  become: yes
+  copy: src={{ item }} dest=~/.vimrc mode=u+x
+  with_items:
+    - vimrc
+
+
+
+
+- name: copy vimrc
+  copy: src={{ item }} dest=~/.vimrc mode=u+x
+  with_items:
+    - vimrc2
+
+- name: install Vundle
+  git:
+    repo: 'https://github.com/VundleVim/Vundle.vim.git'
+    dest: ~/.vim/bundle/Vundle.vim
+    # version: v0.10.2
+
+- name: create spell directory
+  file: path=~/.vim/spell state=directory
+
+- name: update plugins
+  shell: vim -i NONE -c PluginUpdate -c quitall
+
+- name: change vimrc
+  copy: src={{ item }} dest=~/.vimrc mode=u+x
+  with_items:
+    - vimrc
+
+
+- apt: name={{ item }} state=latest
+  become: yes
+  with_items:
+    - ack-grep
+    - clang-format-3.6
+    - clang-3.6
+    - llvm
+    - exuberant-ctags
+    - curl
+    - python-apt
+    - python-pycurl
+    - python-dev
+    - python-setuptools
+    - flex
+  when: ansible_distribution == 'Ubuntu'
+  tags: always
+
+- easy_install: name=pip
+  become: yes
+  tags: always
+
+- shell: composer global require "squizlabs/php_codesniffer=*"
+  # become: yes
+  ignore_errors: yes
+  tags:
+    - all
+    - php
+
+- pip: name={{ item }} state=present
+  become: yes
+  with_items:
+    - pylint
+    - ansible-lint
+    # - grip
+    - bashate
+  tags:
+    - all
+
+- gem: name={{ item }} state=latest user_install=no
+  become: yes
+  ignore_errors: yes
+  with_items:
+    - haml-lint
+    - ruby-lint
+    - sqlint
+    - rubocop
+  tags:
+    - all
+    - ruby
+
+- npm: name={{ item }} global=yes state=latest
+  become: yes
+  ignore_errors: yes
+  with_items:
+    - js-yaml
+    - stylelint
+    - jsonlint
+    - eslint
+    - eslint-plugin-import
+    - eslint-plugin-jsx-a11y
+    - eslint-config-airbnb
+    - eslint-plugin-react
+  tags:
+    - all
+    - eslint
+
+- copy:
+    src: ./files/eslintrc
+    dest: ~/.eslintrc
+    backup: yes
+  tags:
+    - all
+    - eslint

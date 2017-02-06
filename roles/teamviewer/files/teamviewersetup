@@ -1,0 +1,31 @@
+#!/usr/bin/expect --
+import pexpect
+child = pexpect.spawn('sudo teamviewer setup')
+child.expect('.*мя пользоват?.*')
+child.sendline('твойлогинтимвивераккаунта')
+child.expect('.*свой паро?.*')
+child.sendline('твойпарольтимвивераккаунта')
+child.expect('.*обавлен?.*')
+child.sendline('y')
+
+# set timeout -1
+
+# spawn sudo teamviewer setup
+# while {1} {
+#   expect {
+#     ".*мя пользоват?.*" {
+#       send "твойлогиттимвивераккаунта\n"
+#     }
+#     ".*свой паро?.*" {
+#       send "твойпарольоттимвивераккаунта\n"
+#     }
+#     ".*обавлен?.*" {
+#       send "y\n"
+#     }
+#     eof {
+#       break
+#     }
+#   }
+# }
+#здесь два варианта использования expect, один закомментирован
+#оба не работают потому что данные тимвивераккаунта можно ввести только лично

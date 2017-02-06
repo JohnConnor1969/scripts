@@ -1,0 +1,63 @@
+---
+
+- name: 'Устанавливаем необходимые зависимости'
+  become: true
+  become_user: root
+  apt: 'name={{ item }} state=latest update_cache=yes'
+  with_items:
+   - 'git'
+   - 'python-pip'
+   - 'apt-transport-https'
+   - 'ca-certificates'
+
+- name: 'Add docker apt keys'
+  become: true
+  become_user: root
+  apt_key: keyserver=hkp://p80.pool.sks-keyservers.net:80 id=58118E89F3A912897C070ADBF76221572C52609D
+
+- name: 'Add docker apt repo'
+  become: true
+  become_user: root
+  apt_repository: repo='deb https://apt.dockerproject.org/repo ubuntu-xenial main' state=present
+
+- name: 'Install Docker'
+  become: true
+  become_user: root
+  apt: 'name=docker-engine update_cache=yes'
+
+- name: 'Install docker-compose'
+  become: true
+  become_user: root
+  pip: 'name=docker-compose'
+
+
+- name: 'Send key for github infrastructure'
+  copy: src=../keys/infrastructure/id_rsa{{ item }} dest=~/.ssh/id_infrastructure{{ item }} mode=400
+  with_items:
+     - ''
+     - '.pub'
+
+#- name: "add id_rsa in ssh-agent"
+#  shell: eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_infrastructure
+
+- name: 'Clone infrastructure from git'
+  git: repo=git@github.com:zoomtv/docker-infrastructure.git
+       dest=~/infrastructure
+       key_file=~/.ssh/id_infrastructure
+       accept_hostkey=yes
+
+
+- name: 'Send key for github api'
+  copy: src=../keys/zoomtv-samsung/id_rsa{{ item }} dest=~/.ssh/id_zoomtvsamsung{{ item }} mode=400
+  with_items:
+     - ''
+     - '.pub'
+
+#- name: "add id_rsa in ssh-agent"
+#  shell: eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_zoomtvsamsung
+
+- name: 'Clone api from git'
+  git: repo=git@github.com:zoom-group/zoomtv-samsung.git
+       dest=~/zoomtv-samsung
+       key_file=~/.ssh/id_zoomtvsamsung
+       accept_hostkey=yes
